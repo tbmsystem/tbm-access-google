@@ -1,0 +1,14 @@
+node_modules/
+dist/
+
+# Env files (do not commit secrets)
+.env
+.env.local
+.env.development.local
+.env.production.local
+.env.*
+
+# OS and editor junk
+.DS_Store
+Thumbs.db
+.vscode/
