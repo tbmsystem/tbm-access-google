@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { useFirestore } from '../hooks/useFirestore';
 import StatsCard from '../components/dashboard/StatsCard';
 import RevenueChart from '../components/charts/RevenueChart';
@@ -8,6 +9,7 @@ import { format } from 'date-fns';
 
 export default function Dashboard() {
   const { data: transactions, loading, add, remove, update } = useFirestore('transazioni');
+  const { user } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({ 
@@ -67,8 +69,9 @@ export default function Dashboard() {
       const data = {
         ...formData,
         amount: Number(formData.amount),
-        // Se non è selezionata una data, usa oggi
-        date: formData.date || format(new Date(), 'yyyy-MM-dd')
+        date: formData.date || format(new Date(), 'yyyy-MM-dd'),
+        userId: user?.uid || null,
+        userEmail: user?.email || null
       };
 
       if (editingId) {
@@ -101,13 +104,11 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard 
-          title="Saldo Totale" 
-          value={`€${totalBalance.toLocaleString('it-IT', { minimumFractionDigits: 2 })}`} 
-          icon={Wallet} 
-          color="blue" 
+          title="Transazioni Totali" 
+          value={transactions.length}
+          color="purple" 
         />
         <StatsCard 
           title="Entrate" 
@@ -122,9 +123,10 @@ export default function Dashboard() {
           color="red" 
         />
         <StatsCard 
-          title="Transazioni Totali" 
-          value={transactions.length}
-          color="purple" 
+          title="Saldo Totale" 
+          value={`€${totalBalance.toLocaleString('it-IT', { minimumFractionDigits: 2 })}`} 
+          icon={Wallet} 
+          color="blue" 
         />
       </div>
 
